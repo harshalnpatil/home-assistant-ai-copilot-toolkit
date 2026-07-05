@@ -1,0 +1,7 @@
+{
+  "workspaceRoot": "..",
+  "haConfigRepo": "../home-assistant-config",
+  "editableRepo": "../home-assistant-config-editable",
+  "nodeRedRepo": "../home-assistant-node-red",
+  "indexOutput": "output/ha-index"
+}

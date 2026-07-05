@@ -1,0 +1,8 @@
+sample_script:
+  alias: "Sample script"
+  description: "Example script for the public toolkit fixtures."
+  sequence:
+    - service: logbook.log
+      data:
+        name: "Sample script"
+        message: "Example action"

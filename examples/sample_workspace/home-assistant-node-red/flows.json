@@ -1,0 +1,22 @@
+[
+  {
+    "id": "tab1",
+    "type": "tab",
+    "label": "Sample Room"
+  },
+  {
+    "id": "inject1",
+    "type": "inject",
+    "z": "tab1",
+    "name": "Kickoff",
+    "wires": [["fn1"]]
+  },
+  {
+    "id": "fn1",
+    "type": "function",
+    "z": "tab1",
+    "name": "Collect",
+    "func": "return msg;",
+    "wires": [[]]
+  }
+]

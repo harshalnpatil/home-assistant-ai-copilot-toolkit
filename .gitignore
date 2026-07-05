@@ -1,0 +1,16 @@
+.env
+*.env
+config.json
+output/
+**/output/
+*.bak
+*.bak-*
+*.orig
+*.tmp
+*.log
+__pycache__/
+*.pyc
+home-assistant-node-red/flows-split/
+home-assistant-node-red/output/
+home-assistant-lovelace/lovelace-live/
+home-assistant-config/.storage/

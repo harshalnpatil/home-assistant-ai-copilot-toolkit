@@ -1,0 +1,10 @@
+{
+  "data": {
+    "floors": [
+      {
+        "id": "sample_floor",
+        "name": "Ground Floor"
+      }
+    ]
+  }
+}

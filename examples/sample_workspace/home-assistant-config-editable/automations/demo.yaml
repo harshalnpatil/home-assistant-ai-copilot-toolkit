@@ -1,0 +1,12 @@
+- id: "demo_automation"
+  alias: "Sample automation"
+  description: "Example automation for the public toolkit fixtures."
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: light.sample_room_lamp
+      to: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.sample_room_lamp

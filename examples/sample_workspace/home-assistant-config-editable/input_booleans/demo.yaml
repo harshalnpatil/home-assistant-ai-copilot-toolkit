@@ -1,0 +1,3 @@
+input_boolean.sample_mode:
+  name: "Sample Mode"
+  icon: mdi:toggle-switch

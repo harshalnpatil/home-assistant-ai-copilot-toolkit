@@ -1,0 +1,22 @@
+{
+  "data": {
+    "entities": [
+      {
+        "entity_id": "light.sample_room_lamp",
+        "name": "Sample Lamp",
+        "original_name": "Sample Lamp",
+        "area_id": "sample_area",
+        "device_id": "sample_device",
+        "platform": "demo"
+      },
+      {
+        "entity_id": "switch.sample_room_fan",
+        "name": "Sample Fan",
+        "original_name": "Sample Fan",
+        "area_id": "sample_area",
+        "device_id": "sample_device",
+        "platform": "demo"
+      }
+    ]
+  }
+}

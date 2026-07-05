@@ -1,0 +1,15 @@
+{
+  "data": {
+    "devices": [
+      {
+        "id": "sample_device",
+        "name": "Sample Device",
+        "name_by_user": "Sample Device",
+        "area_id": "sample_area",
+        "manufacturer": "Example Co",
+        "model": "Demo One",
+        "floor_id": "sample_floor"
+      }
+    ]
+  }
+}

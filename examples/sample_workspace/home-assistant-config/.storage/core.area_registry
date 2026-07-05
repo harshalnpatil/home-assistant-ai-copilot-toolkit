@@ -1,0 +1,12 @@
+{
+  "data": {
+    "areas": [
+      {
+        "id": "sample_area",
+        "name": "Sample Room",
+        "floor_id": "sample_floor",
+        "picture": null
+      }
+    ]
+  }
+}
