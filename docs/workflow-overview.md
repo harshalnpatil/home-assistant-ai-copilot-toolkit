@@ -23,4 +23,9 @@ paths. It will skip missing inputs instead of failing on absent private data.
 ## 5. Sync when needed
 
 `sync-ha-config.ps1` is a convenience wrapper for sibling repos. It expects
-either explicit paths or a config file that names them.
+either explicit paths or a config file that names them. In the private
+workspace, the corresponding sync tool deploys by default through the Home
+Assistant REST API: publish editable config, managed pull, managed backup,
+local backup refresh, then generated views. `-SkipHaDeployment` is the explicit
+repository-only opt-out. REST authentication uses `HASS_TOKEN`; `HASS_HOST`
+defaults to `http://homeassistant.local:8123`.

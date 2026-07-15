@@ -3,5 +3,9 @@
   "haConfigRepo": "../home-assistant-config",
   "editableRepo": "../home-assistant-config-editable",
   "nodeRedRepo": "../home-assistant-node-red",
-  "indexOutput": "output/ha-index"
+  "indexOutput": "output/ha-index",
+  "hassHost": "http://homeassistant.local:8123",
+  "managedPullScriptEntityId": "script.agent_config_pull",
+  "managedBackupScriptEntityId": "script.agent_config_backup",
+  "statusEntityId": "input_text.agent_config_sync_status"
 }

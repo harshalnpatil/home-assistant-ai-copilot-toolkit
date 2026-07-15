@@ -75,6 +75,13 @@ python .\verify_workspace.py `
 
 Use `.env.example` as the template for a repo-local `.env`.
 
+The workspace-owned sync deployment uses Home Assistant REST with `HASS_TOKEN`
+and optional `HASS_HOST`. It resolves each setting from the process environment,
+then the Windows User environment, then a gitignored toolkit `.env`. The
+workspace tool defaults to deployment, in this order: publish editable config,
+run the managed pull, run the managed backup, refresh the local backup, then
+build local views. Use `-SkipHaDeployment` only for a repository-only run.
+
 ## Companion tools
 
 This toolkit does not include the full Lovelace sync utility. The companion
