@@ -1,22 +1,33 @@
 # Home Assistant AI Copilot Toolkit
 
-This repository is a small public toolkit for AI-assisted Home Assistant work.
-It is not a full agent product and not a mirror of any private workspace.
+## Problem
 
-It publishes:
+Home Assistant configuration often spans several inputs, which makes it hard to give an AI assistant useful context without exposing a live household setup.
 
-- Generic utility scripts
-- Public-safe wrappers
-- Minimal documentation
-- Redacted fixtures for smoke testing
+## What this toolkit does
 
-It excludes:
+This small toolkit builds a lightweight context index from explicit inputs, creates REST-based incident bundles, verifies a workspace, and includes helpers for inspecting Node-RED exports.
 
-- Live Home Assistant config
-- Private `.env` files
-- Generated indexes and outputs
-- Backups and pulled dashboard data
-- House-specific naming unless it is clearly marked as an example
+## Public-safe scope
+
+This is a release artifact, not a backup or a full agent product. It includes generic scripts, documentation, and redacted fixtures only. It excludes live Home Assistant exports, private `.env` files, generated outputs, backups, pulled dashboard data, and house-specific names. See [the privacy boundary](docs/privacy-boundary.md).
+
+## How it works
+
+1. Pass the relevant configuration roots explicitly.
+2. Build an index or incident bundle into `output/`.
+3. Run the verifier against either the included redacted fixture set or your own local paths.
+4. Use the optional PowerShell wrappers when working with sibling repositories.
+
+See [the workflow overview](docs/workflow-overview.md) for the detailed flow.
+
+## Visual evidence
+
+The image below is a synthetic demo. It contains fictional labels and no live system, credential, URL, or infrastructure information.
+
+![Synthetic Home Assistant verification demo](docs/synthetic-demo-verification.png)
+
+*Synthetic verification result shown with example dashboard data only.*
 
 ## Contents
 
@@ -25,9 +36,7 @@ It excludes:
 - `verify_workspace.py`, run smoke tests against the toolkit and optional inputs
 - `verify-workspace.ps1`, PowerShell wrapper for the verifier
 - `sync-ha-config.ps1`, PowerShell wrapper for sibling repo syncs
-- `scripts/split_flows.py`, split a Node-RED export by tab
-- `scripts/spot_check_flows.py`, inspect a Node-RED export for obvious issues
-- `docs/`, public usage notes
+- `scripts/`, Node-RED inspection helpers
 - `examples/sample_workspace/`, redacted fixtures
 
 ## Quick Start
