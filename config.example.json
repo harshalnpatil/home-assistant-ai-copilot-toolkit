@@ -7,5 +7,16 @@
   "hassHost": "http://homeassistant.local:8123",
   "managedPullScriptEntityId": "script.agent_config_pull",
   "managedBackupScriptEntityId": "script.agent_config_backup",
-  "statusEntityId": "input_text.agent_config_sync_status"
+  "managedNodeRedPullScriptEntityId": "script.agent_node_red_pull",
+  "statusEntityId": "input_text.agent_config_sync_status",
+  "diagnosticEntityId": "input_text.agent_node_red_deploy_detail",
+  "bootstrapPullScriptEntityId": "script.manual_config_pull_now",
+  "stageTimeoutSeconds": 180,
+  "pollIntervalSeconds": 2,
+  "nodeRedPullFlow": {
+    "repoSshUrl": "git@github.com:owner/example-node-red-flows.git",
+    "repoBranch": "main",
+    "haServerId": "replace-with-nodered-ha-server-config-id",
+    "restartOnSuccess": false
+  }
 }

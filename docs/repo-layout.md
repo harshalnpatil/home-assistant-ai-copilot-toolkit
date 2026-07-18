@@ -11,6 +11,7 @@ home-assistant-ai-copilot-toolkit/
   scripts/
     split_flows.py
     spot_check_flows.py
+    node_red_status_serializer.py
   verify_workspace.py
   verify-workspace.ps1
   sync-ha-config.ps1
@@ -25,6 +26,10 @@ home-assistant-ai-copilot-toolkit/
       home-assistant-config-editable/
       home-assistant-node-red/
       home-assistant-lovelace/
+    node_red_pull_flow/
+      template.json
+      generate_flow.py
+      README.md
 ```
 
 Only the files listed above are intended to be public toolkit inputs or

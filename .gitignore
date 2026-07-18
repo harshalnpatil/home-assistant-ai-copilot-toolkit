@@ -14,3 +14,4 @@ home-assistant-node-red/flows-split/
 home-assistant-node-red/output/
 home-assistant-lovelace/lovelace-live/
 home-assistant-config/.storage/
+examples/node_red_pull_flow/pull_flow.json

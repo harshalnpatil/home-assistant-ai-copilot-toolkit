@@ -28,6 +28,12 @@ def parse_args() -> argparse.Namespace:
         help="Index output directory. Default: <root>/output/ha-index",
     )
     parser.add_argument("--skip-help", action="store_true", help="Skip script --help checks.")
+    parser.add_argument(
+        "--pull-flow-config",
+        default="",
+        help="Optional config.json with a 'nodeRedPullFlow' block. If omitted, the "
+        "pull-flow fixture test uses built-in redacted values.",
+    )
     return parser.parse_args()
 
 
@@ -132,6 +138,113 @@ def validate_node_red_repo(root: Path | None, toolkit_root: Path) -> list[str]:
     return problems
 
 
+def validate_node_red_pull_flow(toolkit_root: Path, pull_flow_config: str) -> list[str]:
+    """Generate a pull-flow fixture from the template and check it for leaks.
+
+    Verifies that generate_flow.py produces valid JSON with no leftover
+    placeholders, no private identifiers, and that the embedded status
+    serializer produces the expected run_id|node_red|success|0 contract.
+    """
+    problems: list[str] = []
+    template = toolkit_root / "examples" / "node_red_pull_flow" / "template.json"
+    generator = toolkit_root / "examples" / "node_red_pull_flow" / "generate_flow.py"
+    if not template.exists() or not generator.exists():
+        return problems
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        output = Path(temp_dir) / "pull_flow.json"
+        cmd = [
+            sys.executable,
+            str(generator),
+            "--template",
+            str(template),
+            "--output",
+            str(output),
+            "--repo-ssh-url",
+            "git@github.com:owner/example-node-red-flows.git",
+            "--repo-branch",
+            "main",
+            "--ha-server-id",
+            "sample-ha-server-id",
+            "--pull-script-entity-id",
+            "script.agent_node_red_pull",
+            "--status-entity-id",
+            "input_text.agent_config_sync_status",
+            "--diagnostic-entity-id",
+            "input_text.agent_node_red_deploy_detail",
+        ]
+        if pull_flow_config:
+            cmd.extend(["--config", pull_flow_config])
+        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=str(toolkit_root))
+        if proc.returncode != 0:
+            problems.append(f"generate_flow.py failed: {proc.stderr.strip() or proc.stdout.strip()}")
+            return problems
+        if not output.exists():
+            problems.append("generate_flow.py did not produce pull_flow.json")
+            return problems
+
+        raw = output.read_text(encoding="utf-8")
+        leftover = [p for p in (
+            "REPO_SSH_URL", "REPO_BRANCH", "HA_SERVER_ID",
+            "PULL_SCRIPT_ENTITY_ID", "STATUS_ENTITY_ID", "DIAGNOSTIC_ENTITY_ID",
+        ) if "{{" + p + "}}" in raw]
+        if leftover:
+            problems.append(f"generate_flow.py left placeholders: {', '.join(leftover)}")
+
+        private_markers = [
+            "harshalnpatil",
+            "replace-me",
+            "ghp_",
+            "github_pat_",
+            "HASS_TOKEN=",
+            "-----BEGIN OPENSSH PRIVATE KEY-----",
+            "-----BEGIN RSA PRIVATE KEY-----",
+            "-----BEGIN EC PRIVATE KEY-----",
+        ]
+        leaked = [m for m in private_markers if m in raw]
+        if leaked:
+            problems.append(f"generate_flow.py output leaked private markers: {leaked}")
+
+        try:
+            flow = json.loads(raw)
+        except Exception as exc:
+            problems.append(f"generate_flow.py output is not valid JSON: {exc}")
+            return problems
+
+        classify = next((n for n in flow if n.get("id") == "classify_result"), None)
+        if classify is None:
+            problems.append("generate_flow.py output missing classify_result node")
+        elif "|node_red|success|0" not in classify.get("func", ""):
+            problems.append("classify_result node does not emit the success|0 contract")
+
+    return problems
+
+
+def validate_status_serializer(toolkit_root: Path) -> list[str]:
+    """Test the Python status serializer that mirrors the Node-RED function node."""
+    problems: list[str] = []
+    serializer_path = toolkit_root / "scripts" / "node_red_status_serializer.py"
+    if not serializer_path.exists():
+        return problems
+    sys.path.insert(0, str(toolkit_root / "scripts"))
+    try:
+        import importlib
+        module = importlib.import_module("node_red_status_serializer")
+        expected = "abc|node_red|success|0"
+        actual = module.serialize_status("abc", "node_red", "success", 0)
+        if actual != expected:
+            problems.append(f"serialize_status returned {actual!r}, expected {expected!r}")
+        from_payload = module.from_exec_payload("abc", "node_red", {"code": 0})
+        if from_payload != expected:
+            problems.append(f"from_exec_payload({{'code':0}}) returned {from_payload!r}, expected {expected!r}")
+        failure = module.from_exec_payload("abc", "node_red", {"code": 128})
+        if failure != "abc|node_red|failure|128":
+            problems.append(f"from_exec_payload({{'code':128}}) returned {failure!r}, expected 'abc|node_red|failure|128'")
+    finally:
+        sys.path.pop(0)
+    return problems
+
+
 def validate_lovelace_repo(root: Path | None) -> list[str]:
     problems: list[str] = []
     if root is None or not root.exists():
@@ -202,6 +315,8 @@ def main() -> int:
             root / "verify_workspace.py",
             root / "scripts" / "split_flows.py",
             root / "scripts" / "spot_check_flows.py",
+            root / "scripts" / "node_red_status_serializer.py",
+            root / "examples" / "node_red_pull_flow" / "generate_flow.py",
         ]:
             if not script.exists():
                 continue
@@ -215,6 +330,8 @@ def main() -> int:
     problems.extend(validate_editable_repo(editable_root))
     problems.extend(validate_node_red_repo(node_red_root, root))
     problems.extend(validate_lovelace_repo(lovelace_root))
+    problems.extend(validate_node_red_pull_flow(root, args.pull_flow_config))
+    problems.extend(validate_status_serializer(root))
     problems.extend(validate_index(root, index_output, ha_root, editable_root, node_red_root, lovelace_root))
 
     if problems:
